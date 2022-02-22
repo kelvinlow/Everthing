@@ -1,0 +1,190 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=0" />
+  <title>横幅碎片选择器</title>
+  <style>
+    body {
+      margin: 1em auto;
+      max-width: 300px;
+      font-family: Arial, "Microsoft Yahei", "Hiragino Sans GB", Helvetica, sans-serif;
+      font-size: 16px;
+      color: #353535;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    fieldset {
+      border-radius: 5px;
+    }
+
+    fieldset>label {
+      display: block;
+      margin: 0.5em auto;
+    }
+
+    #submit {
+      display: block;
+      margin: 1em auto;
+      min-width: 10em;
+      min-height: 2.2em;
+    }
+
+    #result {
+      min-height: 2em;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>横幅碎片选择器</h1>
+  <form id="form">
+    <fieldset>
+      <legend>生肖碎片数量</legend>
+      <label>鼠：<input name="鼠" type="number" min="0" value="0" autofocus /> </label>
+      <label>牛：<input name="牛" type="number" min="0" value="0" /> </label>
+      <label>虎：<input name="虎" type="number" min="0" value="0" /> </label>
+      <label>兔：<input name="兔" type="number" min="0" value="0" /> </label>
+      <label>龙：<input name="龙" type="number" min="0" value="0" /> </label>
+      <label>蛇：<input name="蛇" type="number" min="0" value="0" /> </label>
+      <label>马：<input name="马" type="number" min="0" value="0" /> </label>
+      <label>羊：<input name="羊" type="number" min="0" value="0" /> </label>
+      <label>猴：<input name="猴" type="number" min="0" value="0" /> </label>
+      <label>鸡：<input name="鸡" type="number" min="0" value="0" /> </label>
+      <label>狗：<input name="狗" type="number" min="0" value="0" /> </label>
+      <label>猪：<input name="猪" type="number" min="0" value="0" /> </label>
+    </fieldset>
+    <input id="submit" type="submit" value="确定" />
+    <fieldset>
+      <legend>合成配方组合</legend>
+      <div id="result"></div>
+    </fieldset>
+  </form>
+
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      const recipes = [
+        "鼠牛虎龙", "鼠牛虎蛇", "鼠牛虎羊", "鼠牛虎猴", "鼠牛虎狗", "鼠牛兔龙",
+        "鼠牛兔蛇", "鼠牛兔羊", "鼠牛兔猴", "鼠牛龙蛇", "鼠牛龙马", "鼠牛龙羊",
+        "鼠牛龙猴", "鼠牛龙鸡", "鼠牛龙狗", "鼠牛蛇猴", "鼠牛蛇猪", "鼠牛马猴",
+        "鼠牛羊猴", "鼠牛羊狗", "鼠牛羊猪", "鼠牛猴鸡", "鼠牛猴狗", "鼠牛鸡猪",
+        "鼠牛狗猪", "鼠虎兔龙", "鼠虎兔蛇", "鼠虎兔马", "鼠虎兔羊", "鼠虎兔猴",
+        "鼠虎兔鸡", "鼠虎龙蛇", "鼠虎龙羊", "鼠虎龙猴", "鼠虎龙鸡", "鼠虎龙狗",
+        "鼠虎龙猪", "鼠虎蛇马", "鼠虎蛇羊", "鼠虎蛇猴", "鼠虎蛇鸡", "鼠虎蛇狗",
+        "鼠虎蛇猪", "鼠虎马猴", "鼠虎马鸡", "鼠虎羊猴", "鼠虎羊鸡", "鼠虎羊狗",
+        "鼠虎羊猪", "鼠虎猴鸡", "鼠虎猴狗", "鼠虎猴猪", "鼠虎狗猪", "鼠兔龙蛇",
+        "鼠兔龙马", "鼠兔龙羊", "鼠兔龙猴", "鼠兔龙鸡", "鼠兔蛇羊", "鼠兔蛇鸡",
+        "鼠兔蛇狗", "鼠兔蛇猪", "鼠兔马猴", "鼠兔马狗", "鼠兔羊鸡", "鼠兔羊狗",
+        "鼠兔猴鸡", "鼠兔鸡狗", "鼠龙蛇马", "鼠龙蛇羊", "鼠龙蛇猴", "鼠龙蛇鸡",
+        "鼠龙蛇狗", "鼠龙蛇猪", "鼠龙马猴", "鼠龙马狗", "鼠龙马猪", "鼠龙羊猴",
+        "鼠龙羊鸡", "鼠龙羊狗", "鼠龙羊猪", "鼠龙猴鸡", "鼠龙猴狗", "鼠龙猴猪",
+        "鼠龙鸡狗", "鼠龙鸡猪", "鼠龙狗猪", "鼠蛇马羊", "鼠蛇马猴", "鼠蛇马鸡",
+        "鼠蛇马狗", "鼠蛇羊鸡", "鼠蛇羊猪", "鼠蛇猴鸡", "鼠蛇猴狗", "鼠蛇猴猪",
+        "鼠蛇鸡狗", "鼠蛇狗猪", "鼠马羊鸡", "鼠马羊狗", "鼠马猴狗", "鼠马猴猪",
+        "鼠马鸡狗", "鼠羊猴鸡", "鼠羊猴狗", "鼠羊猴猪", "鼠羊鸡狗", "鼠羊鸡猪",
+        "鼠羊狗猪", "鼠猴鸡狗", "鼠猴鸡猪", "鼠猴狗猪", "鼠鸡狗猪", "牛虎兔龙",
+        "牛虎兔马", "牛虎兔猴", "牛虎兔鸡", "牛虎兔猪", "牛虎龙蛇", "牛虎龙马",
+        "牛虎龙羊", "牛虎龙猴", "牛虎龙鸡", "牛虎龙猪", "牛虎马猴", "牛虎马鸡",
+        "牛虎马猪", "牛虎猴鸡", "牛虎猴狗", "牛虎猴猪", "牛虎鸡猪", "牛兔龙猴",
+        "牛兔龙猪", "牛兔蛇羊", "牛兔蛇狗", "牛兔蛇猪", "牛兔马猴", "牛兔马猪",
+        "牛兔羊狗", "牛兔羊猪", "牛兔猴猪", "牛兔鸡狗", "牛兔鸡猪", "牛兔狗猪",
+        "牛龙蛇羊", "牛龙蛇猴", "牛龙蛇狗", "牛龙蛇猪", "牛龙马猴", "牛龙马鸡",
+        "牛龙马猪", "牛龙羊猴", "牛龙羊狗", "牛龙羊猪", "牛龙猴鸡", "牛龙猴猪",
+        "牛龙鸡猪", "牛龙狗猪", "牛蛇马鸡", "牛蛇马猪", "牛蛇羊猴", "牛蛇羊狗",
+        "牛蛇猴狗", "牛蛇猴猪", "牛蛇鸡猪", "牛马羊猴", "牛马羊鸡", "牛马羊狗",
+        "牛马羊猪", "牛马猴狗", "牛马猴猪", "牛马鸡狗", "牛马鸡猪", "牛马狗猪",
+        "牛羊猴狗", "牛羊猴猪", "牛羊鸡猪", "牛猴鸡猪", "牛猴狗猪", "牛鸡狗猪",
+        "虎兔龙马", "虎兔龙猴", "虎兔龙鸡", "虎兔龙猪", "虎兔蛇马", "虎兔蛇羊",
+        "虎兔蛇鸡", "虎兔蛇狗", "虎兔蛇猪", "虎兔马猴", "虎兔马鸡", "虎兔羊鸡",
+        "虎兔羊狗", "虎兔猴鸡", "虎兔猴猪", "虎兔鸡狗", "虎龙蛇马", "虎龙蛇鸡",
+        "虎龙蛇狗", "虎龙蛇猪", "虎龙马猴", "虎龙马鸡", "虎龙马猪", "虎龙羊猴",
+        "虎龙羊狗", "虎龙羊猪", "虎龙猴鸡", "虎龙猴狗", "虎龙猴猪", "虎龙鸡猪",
+        "虎龙狗猪", "虎蛇马猴", "虎蛇马鸡", "虎蛇马猪", "虎蛇羊狗", "虎蛇猴猪",
+        "虎蛇鸡猪", "虎蛇狗猪", "虎马羊猴", "虎马羊鸡", "虎马羊狗", "虎马猴鸡",
+        "虎马猴狗", "虎马猴猪", "虎马鸡狗", "虎羊猴猪", "虎羊鸡猪", "虎羊狗猪",
+        "虎猴鸡狗", "虎猴鸡猪", "虎猴狗猪", "兔龙蛇马", "兔龙蛇羊", "兔龙蛇猴",
+        "兔龙蛇鸡", "兔龙蛇狗", "兔龙蛇猪", "兔龙马羊", "兔龙马猴", "兔龙马狗",
+        "兔龙马猪", "兔龙羊猴", "兔龙羊鸡", "兔龙羊狗", "兔龙羊猪", "兔龙猴鸡",
+        "兔龙猴狗", "兔龙猴猪", "兔龙鸡猪", "兔龙狗猪", "兔蛇马羊", "兔蛇马猴",
+        "兔蛇马鸡", "兔蛇马狗", "兔蛇马猪", "兔蛇羊猴", "兔蛇羊猪", "兔蛇猴狗",
+        "兔蛇猴猪", "兔蛇鸡猪", "兔蛇狗猪", "兔马羊猴", "兔马羊鸡", "兔马羊猪",
+        "兔马猴狗", "兔马猴猪", "兔马鸡狗", "兔马狗猪", "兔羊猴狗", "兔羊鸡猪",
+        "兔羊狗猪", "兔猴鸡猪", "兔鸡狗猪", "龙蛇马羊", "龙蛇马猴", "龙蛇马狗",
+        "龙蛇羊猴", "龙蛇羊鸡", "龙蛇羊狗", "龙蛇猴鸡", "龙蛇猴狗", "龙蛇猴猪",
+        "龙蛇鸡狗", "龙马羊猴", "龙马羊狗", "龙马猴鸡", "龙马猴狗", "龙马猴猪",
+        "龙马鸡狗", "龙马鸡猪", "龙羊猴鸡", "龙羊猴狗", "龙羊猴猪", "龙羊鸡狗",
+        "龙羊鸡猪", "龙猴鸡狗", "龙猴鸡猪", "龙猴狗猪", "龙鸡狗猪", "蛇马羊猴",
+        "蛇马羊猪", "蛇马猴鸡", "蛇马猴狗", "蛇马猴猪", "蛇马鸡猪", "蛇马狗猪",
+        "蛇羊猴狗", "蛇羊鸡狗", "蛇羊鸡猪", "蛇羊狗猪", "蛇猴鸡狗", "蛇猴鸡猪",
+        "蛇鸡狗猪", "马羊猴鸡", "马羊猴狗", "马羊猴猪", "马羊鸡狗", "马羊鸡猪",
+        "马羊狗猪", "马猴鸡狗", "马猴鸡猪", "马猴狗猪", "马鸡狗猪", "羊猴鸡狗",
+        "羊猴鸡猪", "羊鸡狗猪", "猴鸡狗猪"
+      ];
+
+      function findComposableRecipes(counter) {
+        const result = new Map();
+        while (true) {
+          const targetRecipe = findRecipeNeedingMostMaterial(counter);
+          if (!targetRecipe) {
+            break;
+          }
+          for (let char of targetRecipe) {
+            counter.set(char, counter.get(char) - 1);
+          }
+          result.set(targetRecipe, (result.get(targetRecipe) || 0) + 1);
+        }
+        return result;
+      }
+
+      function findRecipeNeedingMostMaterial(counter) {
+        let result = null;
+        let maxCount = 0;
+        for (let recipe of recipes) {
+          const materialCount = countNeededMaterial(recipe, counter);
+          if (materialCount > maxCount) {
+            maxCount = materialCount;
+            result = recipe;
+          }
+        }
+        return result;
+      }
+
+      function countNeededMaterial(recipe, counter) {
+        let sum = 0;
+        for (let char of recipe) {
+          const count = counter.get(char);
+          if (isNaN(count) || count <= 0) {
+            return NaN;
+          }
+          sum += count;
+        }
+        return sum;
+      }
+
+      document.getElementById('form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const counter = Array.from(document.querySelectorAll('input[type=number]'))
+          .reduce((result, input) => {
+            result.set(input.getAttribute('name'), parseInt(input.value) || 0);
+            return result;
+          }, new Map());
+        const result = findComposableRecipes(counter);
+        if (result.size === 0) {
+          document.getElementById('result').innerHTML = '没有可合成配方';
+        } else {
+          const output = [];
+          for (let [key, value] of result.entries()) {
+            output.push(`${key}×${value}`);
+          }
+          document.getElementById('result').innerHTML = output.join('<br>');
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
